@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Single-file developer documentation portal">
+  <title>VektorDocs | API &amp; SDK Reference</title>
+  <style>
+    :root {
+      --bg-page: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-code: #0f172a;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-code: #e2e8f0;
+      --accent: #0284c7;
+      --accent-soft: #e0f2fe;
+      --border: #e2e8f0;
+      --radius: 0.5rem;
+      --max-width: 1280px;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0b1120;
+      --bg-subtle: #111827;
+      --bg-code: #020617;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-code: #e2e8f0;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --border: #1e293b;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background-color: var(--bg-page);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .version-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.925rem;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Main Layout */
+    main {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .view {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Docs Two-Column Layout */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .docs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 5rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-box:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    .doc-menu {
+      list-style: none;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .doc-menu button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 0.5rem 0.65rem;
+      border-radius: 0.4rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .doc-menu button:hover,
+    .doc-menu button.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Article & Code Blocks */
+    article h1 {
+      font-size: clamp(1.85rem, 4vw, 2.5rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+
+    article h2 {
+      font-size: 1.35rem;
+      margin: 2rem 0 0.75rem;
+    }
+
+    article p {
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      max-width: 68ch;
+    }
+
+    .code-wrapper {
+      background: var(--bg-code);
+      color: var(--text-code);
+      border-radius: var(--radius);
+      margin: 1.25rem 0 1.75rem;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #f8fafc;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    /* Guides & Changelog Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .info-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .info-card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .release-item {
+      border-left: 2px solid var(--accent);
+      padding-left: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .release-date {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav class="topbar" aria-label="Documentation Navigation">
+      <a href="#docs" class="brand">VektorDocs <span class="version-tag">v2.4</span></a>
+      <div class="nav-group">
+        <ul class="nav-links">
+          <li><a href="#docs" data-route="docs" aria-current="page">API Reference</a></li>
+          <li><a href="#guides" data-route="guides">Guides</a></li>
+          <li><a href="#changelog" data-route="changelog">Changelog</a></li>
+        </ul>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle color theme">Dark Mode</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- PAGE 1: API REFERENCE -->
+    <section id="docs" class="view active">
+      <div class="docs-grid">
+        <aside class="sidebar">
+          <input type="search" id="doc-search" class="search-box" placeholder="Search endpoints..." aria-label="Search documentation">
+          <ul class="doc-menu" id="doc-menu">
+            <li><button class="active" data-section="auth">Authentication</button></li>
+            <li><button data-section="webhooks">Webhook Events</button></li>
+            <li><button data-section="ratelimits">Rate Limits</button></li>
+          </ul>
+        </aside>
+
+        <article id="doc-content">
+          <div class="doc-section" data-topic="auth">
+            <h1>Authentication</h1>
+            <p>Authenticate all REST API requests using Bearer tokens in the <code>Authorization</code> header. Never expose secret keys in client-side bundles.</p>
+
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>bash / curl</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+              <pre><code>curl -X GET https://vektor.dev \
+  -H "Authorization: Bearer vk_live_98a76b54c321" \
+  -H "Content-Type: application/json"</code></pre>
+            </div>
+          </div>
+
+          <div class="doc-section" data-topic="webhooks">
+            <h2>Webhook Events</h2>
+            <p>Subscribe to real-time asynchronous events such as <code>deployment.succeeded</code> or <code>invoice.paid</code> with HMAC-SHA256 signature verification.</p>
+
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>javascript</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+              <pre><code>import { verifySignature } from '@vektor/sdk';
+
+export async function POST(req) {
+  const signature = req.headers.get('x-vektor-sig');
+  const isValid = verifySignature(await req.text(), signature, process.env.WEBHOOK_SECRET);
+  return new Response(isValid ? 'OK' : 'Invalid', { status: isValid ? 200 : 401 });
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="doc-section" data-topic="ratelimits">
+            <h2>Rate Limits</h2>
+            <p>Standard workspaces allow up to <strong>1,200 requests per minute</strong>. Inspect the <code>X-RateLimit-Remaining</code> response header to throttle background workers gracefully.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
